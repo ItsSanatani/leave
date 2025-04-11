@@ -4,7 +4,7 @@ from config import API_ID, API_HASH, BOT_TOKEN, SESSION_STRING, OWNER_ID
 from sessions import add_session_string, remove_session_string, get_all_sessions
 
 bot = Client("BotSession", bot_token=BOT_TOKEN, api_id=API_ID, api_hash=API_HASH)
-user = Client(session_name=SESSION_STRING, api_id=API_ID, api_hash=API_HASH)
+user = Client(SESSION_STRING, api_id=API_ID, api_hash=API_HASH)
 
 @bot.on_message(filters.command("addsession") & filters.private)
 async def add_session_handler(_, message):
