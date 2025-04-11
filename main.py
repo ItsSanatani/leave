@@ -43,9 +43,9 @@ async def stats_handler(client, message: Message):
     if not SESSIONS:
         return await message.reply("No sessions available.")
     
-    msg = await message.reply("Collecting stats, wait...")
+    msg = await message.reply("Collecting stats, please wait...")
     results = []
-    
+
     for session in SESSIONS:
         try:
             user = Client(
@@ -53,18 +53,17 @@ async def stats_handler(client, message: Message):
                 session_string=session,
                 api_id=API_ID,
                 api_hash=API_HASH,
+                workdir=f"sessions/{session[:10]}"  # to avoid long filename error
             )
-            async with user:
-                dialogs = user.iter_dialogs()
-                count = 0
-                async for dialog in dialogs:
-                    if dialog.chat.type in [ChatType.SUPERGROUP, ChatType.GROUP]:
-                        count += 1
-                me = await user.get_me()
-                results.append(f"**{me.first_name}**: `{count}` groups")
+            await user.start()
+            me = await user.get_me()
+            dialogs = await user.get_dialogs()
+            group_count = sum(1 for d in dialogs if d.chat.type in ["supergroup", "group"])
+            results.append(f"**{me.first_name}**: `{group_count}` groups")
+            await user.stop()
         except Exception as e:
-            results.append(f"**Session Error:** `{e}`")
-    
+            results.append(f"**Session Error:** `{str(e)}`")
+
     await msg.edit_text("\n".join(results))
 
 bot.run()
