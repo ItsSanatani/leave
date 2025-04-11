@@ -60,3 +60,5 @@ async def leave_group(_, message: Message):
         except Exception as e:
             result += f"Session {idx}: Failed – {e}\n"
     await message.reply(result)
+
+app.run()
